@@ -22,15 +22,14 @@ class ICUStay(Base):
 
         # ICUSTAYS file name
         filename = self.config['FILE_DIR'] + self.config['IN_FNAME']['ICUSTAYS']
-        usecols = ["ROW_ID", "SUBJECT_ID", "HADM_ID", "ICUSTAY_ID", "DBSOURCE",\
-                    "FIRST_CAREUNIT", "LAST_CAREUNIT", "FIRST_WARDID", "LAST_WARDID",\
-                        "INTIME", "OUTTIME",	"LOS"]
-
         # Set column dtype=str: Avoid ambiguity of Python interpreter
         # col_dtype = {
         #                 "CHARTDATE": str, "CPT_CD": str, "CPT_NUMBER": str,
         #                 "COSTCENTER": str, "CPT_SUFFIX": str, "TICKET_ID_SEQ": str}
-
+        usecols = ["ROW_ID", "SUBJECT_ID", "HADM_ID", "ICUSTAY_ID", "DBSOURCE",\
+                    "FIRST_CAREUNIT", "LAST_CAREUNIT", "FIRST_WARDID", "LAST_WARDID",\
+                        "INTIME", "OUTTIME",	"LOS"]
+    
         # Read from csv file
         df_icustay = pd.read_csv(filename, encoding='latin1', usecols=usecols)
 

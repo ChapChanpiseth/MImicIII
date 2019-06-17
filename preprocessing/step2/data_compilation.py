@@ -85,8 +85,8 @@ class DataCompilation:
         # ----------
         #   OutputEvent (filtered by subject_id, hamd_id, icu_stay)
         #   & ChartEvents (filtered by subject_id, hamd_id, icu_stay)
-        df_pt_adm_icu_outevs_charevs = df_pt_adm_icu_outevent.append(df_pt_adm_icu_charevs)
-        # Save Admissions to file
+        df_pt_adm_icu_outevs_charevs = df_pt_adm_icu_outevent.append(df_pt_adm_icu_charevs, sort=True)
+        # Save df_pt_adm_icu_outevs_charevs to file
         filename = self.config['OUT_DIR_S2'] + self.config['OUT_FNAME']['OUTEVENT_CHAREVS']
         FileHelper.save_to_csv(df_pt_adm_icu_outevs_charevs, filename)
 
@@ -102,15 +102,11 @@ class DataCompilation:
         # Conditions
         # ---------
         # subject_id	hadm_id	icustay_id	unit	procedure
-        temp_df['subject_id'] = temp_df[col_subject_id]
-        temp_df['hadm_id'] = temp_df[col_hadm_id]
-        temp_df['icustay_id'] = temp_df[col_icustay_id]
-        temp_df['unit'] = ''
-        temp_df['procedure'] = ''
-
-        # Add empty column
-        # temp_df = temp_df.reindex(temp_df.columns.tolist() + ['unit', 'procedure'])
-        # temp_df.assign(unit="", procedure="")
+        # temp_df.loc[:, 'subject_id_1'] = temp_df[col_subject_id]
+        # temp_df.loc[:, 'hadm_id_1'] = temp_df[col_hadm_id]
+        # temp_df.loc[:, 'icustay_id_1'] = temp_df[col_icustay_id]
+        # temp_df.loc[:, 'unit_1'] = ''
+        # temp_df.loc[:, 'procedure_1'] = ''
 
         # Save Admissions to file
         filename = self.config['OUT_DIR_S2'] + self.config['OUT_FNAME']['TEMP_DF']
@@ -120,13 +116,15 @@ class DataCompilation:
         # Final Merge
         ##########
         # 
-        df_pt_adm_icu_outevs_charevs = df_pt_adm_icu_outevs_charevs.append(temp_df)
+        df_pt_adm_icu_outevs_charevs = df_pt_adm_icu_outevs_charevs.append(temp_df, sort=True)
 
         ### Count number of records
         self.config['PARAM']['NUM_ROWS'] = len(df_pt_adm_icu_outevs_charevs.index)
 
         # Save NUM_EVENTS_WINSIZE_24H to file
-        filename = self.config['OUT_DIR_S2'] + self.config['OUT_FNAME']['OUT_NUM_EVENTS_WINSIZE_24H']
+        # filename = self.config['OUT_DIR_S2'] + self.config['OUT_FNAME']['OUT_NUM_EVENTS_WINSIZE_24H']
+        filename = self.config['OUT_DIR_S2'] + str(self.config['PARAM']['LIMIT_NUM_PATIENT']) + '_' +\
+            self.config['OUT_FNAME']['OUT_NUM_EVENTS_WINSIZE_24H']
         FileHelper.save_to_csv(df_pt_adm_icu_outevs_charevs, filename)
 
         ### Sharp number of patients for output based on the criteria

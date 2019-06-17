@@ -323,7 +323,7 @@ class Preprocessing:
         dc_end = time.time()
 
         exe_time = dc_end - dc_start
-        msg = '\n\n *** Step 2: Execution time of records {0} is {1}'.format(self.config['PARAM']['NUM_ROWS'], exe_time)
+        msg = '*** Step 2: Execution time of records {0} is {1}'.format(self.config['PARAM']['NUM_ROWS'], exe_time)
         print(msg)
 
     def execute(self):
@@ -331,11 +331,12 @@ class Preprocessing:
         """
 
         start = time.time()
-        print('\n\n *** Step 1: Manipulate Admission, ICUStay, OutputEvent and Chartevent\n')
+        print('\n=====================================================================')
+        print('\n*** Step 1: Manipulate Admission, ICUStay, OutputEvent and Chartevent\n')
         self.start_process()
         end = time.time()
 
-        print("***\nExecution time of %d patient(s) is %f \n******** \n" %\
+        print("*** Execution time of %d patient(s) is %f ********\n" %\
             (self.config['PARAM']['LIMIT_NUM_PATIENT'], end - start))
 
 if __name__ == "__main__":
@@ -397,7 +398,7 @@ if __name__ == "__main__":
         'K_YES': 'YES',
         'K_NO': 'NO',
         'READ_ALL_RECORDS': 'NO',
-        'LIMIT_NUM_PATIENT': 10,
+        'LIMIT_NUM_PATIENT': 700,
         'LIMIT_NUM_CHARTEVENTS': 10000000
     }
 

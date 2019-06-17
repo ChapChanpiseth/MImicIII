@@ -20,17 +20,23 @@ class ChartEvent(Base):
 
         # CHARTEVENTS file name
         filename = self.config['FILE_DIR'] + self.config['IN_FNAME']['CHARTEVENTS']
+
         usecols = ['ROW_ID', 'SUBJECT_ID', 'HADM_ID', 'ICUSTAY_ID',	'ITEMID', 'CHARTTIME', 'STORETIME',\
         	'CGID', 'VALUE', 'VALUENUM', 'VALUEUOM', 'WARNING', 'ERROR', 'RESULTSTATUS', 'STOPPED']
 
-        # Read from csv file
-        df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols)
+        # Set column dtype=str: Avoid ambiguity of Python interpreter
+        col_dtype = { 
+            'ROW_ID': str, 'SUBJECT_ID': str, 'HADM_ID':str, 'ICUSTAY_ID':str,	'ITEMID':str,\
+                'CHARTTIME':str, 'STORETIME': str, 'CGID': str, 'VALUE': str, 'VALUENUM': str,\
+                    'VALUEUOM':str, 'WARNING':str, 'ERROR':str, 'RESULTSTATUS':str, 'STOPPED':str}
 
         # Read from csv file
+        #df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, dtype=col_dtype)
+        # Read from csv file
         if not criteria:
-            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols)
+            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, dtype=col_dtype)
         elif criteria['nrows'] is not None:
-            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, nrows=criteria['nrows'])
+            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, nrows=criteria['nrows'], dtype=col_dtype)
 
         return df_chartevs
 
