@@ -1,3 +1,39 @@
+### CONST: THEY ARE USED IN STEP 2
+CONST = {
+        'K_YES': 'YES',
+        'K_NO': 'NO',
+        'N_ROWS': 'N_ROWS'
+}
+
+### PARAM: Parameters to tune so as to sharp the number of ouput records
+### DOB is the date of birth of the given patient. Patients who are older than 89 years old 
+# at any time in the database have had their date of birth shifted to obscure 
+# their age and comply with HIPAA
+### When Setting READ_ALL_RECORDS=YES, then LIMIT_NUM_PATIENT has no effect
+# - LIMIT_NUM_CHARTEVENTS: there are 330 million records in this CHARTEVENTS, so it is good
+# to limit to 10 million records for less time consuming
+PARAM = {
+        # 'K_YES': 'YES',
+        # 'K_NO': 'NO',
+        'READ_ALL_RECORDS': 'NO',
+        'LIMIT_NUM_PATIENT': 20,
+        #'LIMIT_NUM_CHARTEVENTS': 10000000
+        'LIMIT_NUM_CHARTEVENTS': 1000000
+}
+
+CONFIG = {
+        'CONST': CONST,
+        'PARAM': PARAM,
+}
+
+criteria = {}
+
+criteria[CONFIG['CONST']['N_ROWS']] = 10
+
+if CONFIG['CONST']['N_ROWS'] in criteria:
+        print(criteria[CONFIG['CONST']['N_ROWS']])
+
+
 import pandas as pd
 
 filename = '/Volumes/SSD200/Users/Shared/Mimic/Data/Output/Step2/OUT_LIMIT_NUM_EVENTS_WINSIZE_24H.csv'

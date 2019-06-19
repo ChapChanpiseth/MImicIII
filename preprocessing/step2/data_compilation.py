@@ -117,6 +117,7 @@ class DataCompilation:
         ##########
         # 
         df_pt_adm_icu_outevs_charevs = df_pt_adm_icu_outevs_charevs.append(temp_df, sort=True)
+        #df_pt_adm_icu_outevs_charevs = temp_df.append(df_pt_adm_icu_outevs_charevs, sort=True)
 
         ### Count number of records
         self.config['PARAM']['NUM_ROWS'] = len(df_pt_adm_icu_outevs_charevs.index)

@@ -35,8 +35,9 @@ class ChartEvent(Base):
         # Read from csv file
         if not criteria:
             df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, dtype=col_dtype)
-        elif criteria['nrows'] is not None:
-            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, nrows=criteria['nrows'], dtype=col_dtype)
+        elif self.config['CONST']['N_ROWS'] in criteria:
+            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols,\
+                nrows=criteria[self.config['CONST']['N_ROWS']], dtype=col_dtype)
 
         return df_chartevs
 

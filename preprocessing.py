@@ -1,7 +1,7 @@
 """
     Preprocessing
 """
-import time
+import time, math
 
 import pandas as pd
 import numpy as np
@@ -54,6 +54,9 @@ class Preprocessing:
         out_fname_pts_adms = self.config['OUT_DIR_S1'] + self.config['OUT_FNAME']['PTS_ADMS']
         df_pts_adms = self.merge_df(df_patients, df_adms, left=left, right=right,\
             how='outer', out_filename=out_fname_pts_adms)
+
+        ### Calculate Patient's Age
+        df_pts_adms = self.__calculate_patient_age(df_patients, df_pts_adms)
 
         ### Table: ICUSTAYS
         ### Conditions:
@@ -111,13 +114,55 @@ class Preprocessing:
         ##### Start Data Compilation Step 2
         self.start_data_compilation()
 
-    def __shape_num_patient_by_limit(self, df_adms):
+    def __calculate_patient_age(self, df_patients, df_pts_adms):
+        """ Calculate patient's age since it was obscured
+        """
 
-        if self.config['PARAM']['READ_ALL_RECORDS'] == self.config['PARAM']['K_NO'] and self.config['PARAM']['LIMIT_NUM_PATIENT'] > 0:
+        col_pai_subject_id = self.config['PREFIX_HADM'] + 'SUBJECT_ID'
+        col_pai_hadm_id = self.config['PREFIX_HADM'] + 'HADM_ID'
+        col_dob_year = 'DOB_YEAR'
+        col_hamd_admintime = self.config['PREFIX_HADM'] + 'ADMITTIME'
+
+        for idx, row in df_patients.iterrows():
+            pt_sub_id = row['SUBJECT_ID']
+
+            # Get outevents matching SUBJECT_ID and HAMD_ID
+            mask = (df_pts_adms[col_pai_subject_id] == pt_sub_id)
+            df_output = df_pts_adms[mask]
+
+             # Sort Admintime by non decreasing order
+            df_output = df_output.sort_values(col_hamd_admintime, ascending=True)
+
+            # Calculate the Age
+            year_sec = 60.0 * 60.0 * 24.0 * 365.242
+            pt_age = 0
+            try:
+                admin_time = pd.to_datetime(df_output.iloc[0][col_hamd_admintime])
+                dod = pd.to_datetime(row['DOB'])
+                age_sec = math.ceil((admin_time - dod)/pd.offsets.Second(1))
+                pt_age = math.ceil(age_sec/year_sec)
+            except ValueError:
+                age_sec = 0
+            except Exception:
+                # Output unexpected Exceptions.
+                pt_age = 0
+
+            # DOB_YEAR
+            df_pts_adms.loc[df_pts_adms.SUBJECT_ID == pt_sub_id, col_dob_year] = pt_age
+
+        return df_pts_adms
+
+    def __shape_num_patient_by_limit(self, df_adms):
+        """ Limit number of patient based on settting in PARAM
+        """
+
+        if self.config['PARAM']['READ_ALL_RECORDS'] == self.config['CONST']['K_NO'] \
+            and self.config['PARAM']['LIMIT_NUM_PATIENT'] > 0:
             num_patients = self.config['PARAM']['LIMIT_NUM_PATIENT']
 
             # Get unique subject_id from columns SUBJECT_ID
-            list_unique_subject_id = df_adms[self.config['PREFIX_HADM'] +  'SUBJECT_ID'].unique().tolist()
+            list_unique_subject_id = df_adms[self.config['PREFIX_HADM'] +  \
+                'SUBJECT_ID'].unique().tolist()
             # Generate a uniform random sample from np.arange(len) of size num_patients
             ran_idx = np.random.choice(len(list_unique_subject_id), num_patients)
             # Get values of SUBJECT_ID using ran_idx and column name
@@ -212,7 +257,7 @@ class Preprocessing:
 
         ### Read only 100 000 rows
         if self.config['PARAM']['LIMIT_NUM_CHARTEVENTS'] > 0:
-            criteria['nrows'] = self.config['PARAM']['LIMIT_NUM_CHARTEVENTS']
+            criteria[self.config['CONST']['N_ROWS']] = self.config['PARAM']['LIMIT_NUM_CHARTEVENTS']
 
         chartevent = ChartEvent(**self.config)
         df_chartevs = chartevent.get_chartevents_by_phadmicu(criteria)
@@ -384,7 +429,10 @@ if __name__ == "__main__":
         'HUNIT_ICU': 'ICU',
         'HUNIT_CHAREV': 'CHAREV',
         'HUNIT_CHARTEVENT': 'CHEVENT',
-        'PROCEDURE': 'procedure'
+        'PROCEDURE': 'procedure',
+        'K_YES': 'YES',
+        'K_NO': 'NO',
+        'N_ROWS': 'N_ROWS'
     }
 
     ### PARAM: Parameters to tune so as to sharp the number of ouput records
@@ -395,11 +443,12 @@ if __name__ == "__main__":
     # - LIMIT_NUM_CHARTEVENTS: there are 330 million records in this CHARTEVENTS, so it is good
     # to limit to 10 million records for less time consuming
     PARAM = {
-        'K_YES': 'YES',
-        'K_NO': 'NO',
+        # 'K_YES': 'YES',
+        # 'K_NO': 'NO',
         'READ_ALL_RECORDS': 'NO',
-        'LIMIT_NUM_PATIENT': 700,
-        'LIMIT_NUM_CHARTEVENTS': 10000000
+        'LIMIT_NUM_PATIENT': 20,
+        #'LIMIT_NUM_CHARTEVENTS': 10000000
+        'LIMIT_NUM_CHARTEVENTS': 1000000
     }
 
     CONFIG = {
