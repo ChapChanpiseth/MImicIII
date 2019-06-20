@@ -70,7 +70,7 @@ class Admission(Base):
         """
 
         # Get Admssions of the year having highest number of frequency
-        if self.config['PARAM']['READ_ALL_RECORDS'] == self.config['PARAM']['K_NO']:
+        if self.config['PARAM']['READ_ALL_RECORDS'] == self.config['CONST']['K_NO']:
             return self.get_admissions_by_year(criteria)
         else:
             return self.get_all_admissions(criteria)

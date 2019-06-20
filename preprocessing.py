@@ -381,7 +381,7 @@ class Preprocessing:
         self.start_process()
         end = time.time()
 
-        print("*** Execution time of %d patient(s) is %f ********\n" %\
+        print("\n*** Execution time of %d patient(s) is %f ********\n" %\
             (self.config['PARAM']['LIMIT_NUM_PATIENT'], end - start))
 
 if __name__ == "__main__":
@@ -448,7 +448,7 @@ if __name__ == "__main__":
         'READ_ALL_RECORDS': 'NO',
         'LIMIT_NUM_PATIENT': 20,
         #'LIMIT_NUM_CHARTEVENTS': 10000000
-        'LIMIT_NUM_CHARTEVENTS': 1000000
+        'LIMIT_NUM_CHARTEVENTS': 10000
     }
 
     CONFIG = {
