@@ -36,12 +36,14 @@ class Admission(Base):
             # df_adms = pd.read_csv(filename, parse_dates=['ADMITTIME', 'DISCHTIME', 'DEATHTIME'],\
             # date_parser=dateparse, encoding='latin1', usecols=usecols)
             df_adms = pd.read_csv(filename, encoding='latin1', usecols=usecols)
-
-        elif criteria['nrows'] is not None:
+        elif self.config['CONST']['N_ROWS'] in criteria:
             # df_adms = pd.read_csv(filename, parse_dates=['ADMITTIME', 'DISCHTIME', 'DEATHTIME'],\
             # date_parser=dateparse, encoding='latin1', usecols=usecols, nrows=criteria['nrows'])
-            df_adms = pd.read_csv(filename, encoding='latin1', usecols=usecols, nrows=criteria['nrows'])
-        
+            df_adms = pd.read_csv(filename, encoding='latin1', usecols=usecols,\
+                nrows=criteria[self.config['CONST']['N_ROWS']])
+        else: 
+            df_adms = pd.read_csv(filename, encoding='latin1', usecols=usecols)
+
         # if criteria is not None:
         #     # Conditions
         #     subject_id = df_adms['SUBJECT_ID'] == criteria['SUBJECT_ID']

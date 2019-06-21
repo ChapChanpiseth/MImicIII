@@ -38,6 +38,8 @@ class ChartEvent(Base):
         elif self.config['CONST']['N_ROWS'] in criteria:
             df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols,\
                 nrows=criteria[self.config['CONST']['N_ROWS']], dtype=col_dtype)
+        else: 
+            df_chartevs = pd.read_csv(filename, encoding='latin1', usecols=usecols, dtype=col_dtype)
 
         return df_chartevs
 

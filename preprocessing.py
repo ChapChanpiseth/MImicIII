@@ -1,6 +1,7 @@
 """
     Preprocessing
 """
+
 import time, math
 
 import pandas as pd
@@ -33,6 +34,7 @@ class Preprocessing:
 
         ### Read data from admission based on PAINTENT ID (SUBJECT_ID)
         criteria = {}
+        criteria[self.config['CONST']['N_ROWS']] = 10
 
         ### Read admissions groupby date and
         ### Choose admissions of the year during which contains biggest number of admissions
@@ -166,10 +168,17 @@ class Preprocessing:
             # Generate a uniform random sample from np.arange(len) of size num_patients
             ran_idx = np.random.choice(len(list_unique_subject_id), num_patients)
             # Get values of SUBJECT_ID using ran_idx and column name
-            ran_subject_id = [df_adms[self.config['PREFIX_HADM'] +  'SUBJECT_ID'].iloc[idx] for idx in ran_idx]
+            ran_subject_id = [df_adms[self.config['PREFIX_HADM'] + 'SUBJECT_ID'].iloc[idx] for idx in ran_idx]
             # Filter only matching subject_id in the list
             mask = df_adms[self.config['PREFIX_HADM'] +  'SUBJECT_ID'].isin(ran_subject_id)
             df_adms = df_adms[mask]
+
+        # Get number of Patients
+        # Get unique subject_id from columns SUBJECT_ID
+        list_unique_subject_id = df_adms[self.config['PREFIX_HADM'] +  \
+            'SUBJECT_ID'].unique().tolist()
+        # Set number of Patients
+        self.config['PARAM']['LIMIT_NUM_PATIENT'] = len(list_unique_subject_id)
 
         return df_adms
 
@@ -443,12 +452,9 @@ if __name__ == "__main__":
     # - LIMIT_NUM_CHARTEVENTS: there are 330 million records in this CHARTEVENTS, so it is good
     # to limit to 10 million records for less time consuming
     PARAM = {
-        # 'K_YES': 'YES',
-        # 'K_NO': 'NO',
-        'READ_ALL_RECORDS': 'NO',
-        'LIMIT_NUM_PATIENT': 20,
-        #'LIMIT_NUM_CHARTEVENTS': 10000000
-        'LIMIT_NUM_CHARTEVENTS': 10000
+        'READ_ALL_RECORDS': 'YES',
+        'LIMIT_NUM_PATIENT': 0,
+        'LIMIT_NUM_CHARTEVENTS': 100
     }
 
     CONFIG = {
